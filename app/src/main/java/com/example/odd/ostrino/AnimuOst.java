@@ -8,7 +8,6 @@ public class AnimuOst extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_animuost);
-        listScreen listScreen = new listScreen();
+        setContentView(R.layout.addscreen);
     }
 }
