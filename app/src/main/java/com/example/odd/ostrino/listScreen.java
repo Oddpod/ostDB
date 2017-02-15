@@ -7,9 +7,9 @@ import java.util.List;
  * Created by Odd on 12.02.2017.
  */
 
-public class listScreen {
+public class ListScreen {
 
-   public listScreen() {
+   public ListScreen() {
        List tags = new ArrayList<String>();
        tags.add("KANA_BOON");
        tags.add("Upbeat");
