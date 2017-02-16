@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/TItleinpout" />
+        android:id="@+id/edtTItle" />
 
     <TextView
         android:text="Show"
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/editText4" />
+        android:id="@+id/edtShow" />
 
     <TextView
         android:text="Tags"
@@ -42,11 +42,11 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/editText5" />
+        android:id="@+id/edtTags" />
 
     <Button
-        android:text="Add OST"
+        android:text="Save"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/button3" />
+        android:id="@+id/btnSave" />
 </LinearLayout>

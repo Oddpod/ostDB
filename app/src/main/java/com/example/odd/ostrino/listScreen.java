@@ -10,10 +10,6 @@ import java.util.List;
 public class ListScreen {
 
    public ListScreen() {
-       List tags = new ArrayList<String>();
-       tags.add("KANA_BOON");
-       tags.add("Upbeat");
-       OstObject ost = new OstObject("Silhouette", "Naruto", tags);
-       System.out.println(ost);
+
    }
 }
