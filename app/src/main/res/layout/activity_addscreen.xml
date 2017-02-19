@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/edtTItle" />
+        android:id="@+id/edtTitle" />
 
     <TextView
         android:text="Show"
@@ -44,9 +44,17 @@
         android:ems="10"
         android:id="@+id/edtTags" />
 
-    <Button
-        android:text="Save"
+    <TextView
+        android:text="Link"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/btnSave" />
+        android:id="@+id/tvLink" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/edtUrl" />
+
 </LinearLayout>

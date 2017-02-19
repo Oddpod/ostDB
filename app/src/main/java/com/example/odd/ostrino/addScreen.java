@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-
-import static android.R.attr.id;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * Created by Odd on 12.02.2017.
@@ -19,13 +18,19 @@ import static android.R.attr.id;
 
 public class AddScreen extends DialogFragment{
 
+    AlertDialog.Builder builder;
+    LayoutInflater inflater;
+    View dialogView;
+    String title, show, tags, url;
+
+    EditText edTitle, edShow, edTags, edUrl;
+
     interface AddScreenListener {
 
         void onSaveButtonClick(DialogFragment dialog);
     }
 
     AddScreenListener addScreenListener;
-    Context context;
 
     @Override
     public void onAttach(Activity activity){
@@ -42,19 +47,42 @@ public class AddScreen extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
 
+        builder = new AlertDialog.Builder(getActivity());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        inflater = getActivity().getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.activity_addscreen, null);
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-
-        builder.setView(inflater.inflate(R.layout.addscreen, null))
+        builder.setView(dialogView)
 
                 .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         addScreenListener.onSaveButtonClick(AddScreen.this);
+
                     }
         });
+
+        edTitle = (EditText) dialogView.findViewById(R.id.edtTitle);
+        edTitle.setText(title);
+        edShow = (EditText) dialogView.findViewById(R.id.edtShow);
+        edShow.setText(show);
+        edTags = (EditText) dialogView.findViewById(R.id.edtTags);
+        edTags.setText(tags);
+        edUrl = (EditText) dialogView.findViewById(R.id.edtUrl);
+        edUrl.setText(url);
+
         return builder.create();
+    }
+
+    public View getDialogView(){
+        return dialogView;
+    }
+
+    public void setText(Ost ost){
+        // sets editText to the chosen osts values
+        title = ost.getTitle();
+        show = ost.getShow();
+        tags = ost.getTags();
+        url = ost.getUrl();
     }
 }
