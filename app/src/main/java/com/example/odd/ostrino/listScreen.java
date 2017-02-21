@@ -8,7 +8,10 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableLayout;
@@ -16,21 +19,27 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
  * Created by Odd on 12.02.2017.
  */
 
-public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener{
+public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener {
+
 
     private List<Ost> allOsts;
     private TableLayout tableLayout;
-    private float headerTextSize = 18;
     private float rowTextSize = 11;
+    private EditText filter;
     private DBHandler db;
-    private static int headerBackgroundColor = Color.BLACK;
     private String TAG = "OstInfo";
+    private String filterText;
+    private TextWatcher textWatcher;
+    private TableRow tr_head, tR;
+    private TextView title_header, show_header, tags_header, delete_header, label_title, label_show, label_tags;
 
     public ListScreen() {
     }
@@ -40,53 +49,46 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         super.onCreate(savedInstanceState);
         db = new DBHandler(this);
         setContentView(R.layout.activity_listscreen);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        filter = (EditText) findViewById(R.id.edtFilter);
+        textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                filterText = filter.getText().toString();
+                filterText = filterText.toLowerCase();
+                cleanTable(tableLayout);
+                for (Ost ost : allOsts) {
+                    addRow(ost);
+                }
+
+            }
+        };
+        filter.addTextChangedListener(textWatcher);
         tableLayout = (TableLayout) findViewById(R.id.tlOstTable);
+        tr_head = (TableRow) findViewById(R.id.ostHeaderRow);
         createList();
     }
 
     public void createList() {
-        tableLayout.setWeightSum(3);
-        TableRow tr_head = new TableRow(getApplicationContext());
-        tr_head.setId(View.generateViewId());
-        tr_head.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
+        //tableLayout.removeAllViews();
+        //tableLayout.setWeightSum(3);
 
         //Creating Title column header
-        TextView label_title = new TextView(getApplicationContext());
-        label_title.setId(View.generateViewId());
-        label_title.setText("Title");
-        label_title.setTextColor(headerBackgroundColor);
-        label_title.setPadding(5, 5, 5, 5);
-        label_title.setTextSize(headerTextSize);
-        tr_head.addView(label_title);
+        title_header = (TextView) findViewById(R.id.titleHeader);
+        show_header = (TextView) findViewById(R.id.showHeader);
+        tags_header = (TextView) findViewById(R.id.tagsHeader);
+        delete_header = (TextView) findViewById(R.id.deleteHeader);
 
-        //Show column header
-        TextView label_show = new TextView(getApplicationContext());
-        label_show.setId(View.generateViewId());
-        label_show.setText("Show");
-        label_show.setTextColor(headerBackgroundColor);
-        label_show.setPadding(5, 5, 5, 5);
-        label_show.setTextSize(headerTextSize);
-        tr_head.addView(label_show);
-
-        //Tags column header
-        TextView label_tags = new TextView(getApplicationContext());
-        label_tags.setId(View.generateViewId());
-        label_tags.setText("Tags");
-        label_tags.setTextColor(headerBackgroundColor);
-        label_tags.setPadding(5, 5, 5, 5);
-        label_tags.setTextSize(headerTextSize);
-        tr_head.addView(label_tags);
-
-        //Delete column header
-        TextView label_delete = new TextView(getApplicationContext());
-        label_delete.setId(View.generateViewId());
-        label_delete.setText("Delete");
-        label_delete.setTextColor(headerBackgroundColor);
-        label_delete.setPadding(5, 5, 5, 5);
-        label_delete.setTextSize(headerTextSize);
-        tr_head.addView(label_delete);
-
-        tableLayout.addView(tr_head, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
+        title_header.setText("Title");
+        show_header.setText("Show");
+        tags_header.setText("Tags");
+        delete_header.setText("Delete");
 
         allOsts = db.getAllOsts();
 
@@ -97,12 +99,14 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
 
     public void addRow(final Ost ost) {
         final int id = ost.getId();
+        String ostInfoString = ost.getTitle() + " " + ost.getShow() + " " + ost.getTags();
+        ostInfoString = ostInfoString.toLowerCase();
         final String title = ost.getTitle();
         String show = ost.getShow();
         String tags = ost.getTags();
+        tR = new TableRow(getApplicationContext());
+        tR.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT));
         final String url = ost.getUrl();
-        final TableRow tR = new TableRow(getApplicationContext());
-        tR.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.MATCH_PARENT));
 
         TextView label_title = new TextView(getApplicationContext());
         label_title.setId(View.generateViewId());
@@ -139,21 +143,34 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         label_tags.setPadding(5, 5, 5, 5);
         tR.addView(label_tags);
 
+        //Launches url when you click the title
+        label_title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println(url);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+
+        });
+
         final Button deleteBtn = new Button(getApplicationContext());
         deleteBtn.setId(View.generateViewId());
         deleteBtn.setText("Delete");
+        deleteBtn.setPadding(5, 5, 0, 5);
         deleteBtn.setTextSize(rowTextSize);
         deleteBtn.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 db.deleteOst(id);
+                tR.removeAllViews();
                 Toast.makeText(getApplicationContext(), title + " was deleted from database", Toast.LENGTH_LONG).show();
             }
         });
 
         tR.addView(deleteBtn);
-        tR.setOnLongClickListener(new View.OnLongClickListener(){
+        //Long press to edit Ost
+        tR.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
                 System.out.println(ost.toString());
@@ -163,7 +180,11 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 Toast.makeText(getApplicationContext(), " Editing Ost ", Toast.LENGTH_LONG).show();
                 return false;
             }
-                                  });
+        });
+        if (filterText != null && !ostInfoString.contains(filterText)) {
+            System.out.println(filterText + ostInfoString);
+            tR.removeAllViews();
+        }
         tableLayout.addView(tR, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
     }
 
@@ -181,5 +202,15 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
 
         db.updateOst(ost);
         Toast.makeText(getApplicationContext(), ost.getTitle() + " updated ost", Toast.LENGTH_LONG).show();
+    }
+
+    private void cleanTable(TableLayout table) {
+
+        int childCount = table.getChildCount();
+
+        // Remove all rows except the first one
+        if (childCount > 1) {
+            table.removeViews(1, childCount - 1);
+        }
     }
 }

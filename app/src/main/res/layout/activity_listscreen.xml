@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:id="@+id/activity_listscreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="1dp"
     android:paddingLeft="1dp"
     android:paddingRight="1dp"
@@ -13,36 +12,59 @@
     tools:context="com.example.odd.ostrino.ListScreen">
 
     <EditText
+        android:id="@+id/edtFilter"
         android:layout_width="match_parent"
         android:layout_height="50dip"
-        android:inputType="textPersonName"
-        android:hint="Filter"
-        android:textColor="#f100"
         android:ems="10"
-        android:id="@+id/edtFilter"
-        android:textCursorDrawable="@drawable/black"/>
+        android:hint="Filter"
+        android:inputType="textPersonName"
+        android:textColor="#f100"
+        android:textCursorDrawable="@drawable/black" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="0dp"
         android:layout_weight="1">
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:shrinkColumns="0, 1, 2"
-        android:stretchColumns="0, 1, 2"
-        android:id="@+id/tlOstTable">
 
-        <TableRow
+        <TableLayout
+            android:id="@+id/tlOstTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id = "@+id/ostHeaderRow"/>
+            android:shrinkColumns="0, 1, 2"
+            android:stretchColumns="0, 1, 2">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id = "@+id/ostRow"/>
-    </TableLayout>
-</ScrollView>
+            <TableRow
+                android:id="@+id/ostHeaderRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/titleHeader"
+                android:padding="5dp"
+                android:textColor="#f100"
+                android:text="Title"
+                android:textSize="18sp"></TextView>
+            <TextView
+                android:id="@+id/showHeader"
+                android:padding="5dp"
+                android:textColor="#f100"
+                android:text="Title"
+                android:textSize="18sp"></TextView>
+            <TextView
+                android:id="@+id/tagsHeader"
+                android:padding="5dp"
+                android:textColor="#f100"
+                android:text="Title"
+                android:textSize="18sp"></TextView>
+            <TextView
+                android:id="@+id/deleteHeader"
+                android:padding="5dp"
+                android:textColor="#f100"
+                android:text="Title"
+                android:textSize="18sp"></TextView>
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
 </LinearLayout>

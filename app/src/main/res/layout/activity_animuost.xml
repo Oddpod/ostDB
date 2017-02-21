@@ -15,11 +15,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="15dp"
         android:id="@+id/btnViewOstList" />
 
     <Button
         android:text="Add OST"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnViewOstList"
@@ -31,8 +32,26 @@
         android:text="Add Osts from .txt file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="15dp"
         android:id="@+id/btnBatchAdd"
         android:layout_below="@+id/btnAddOst"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text=" Exports Osts to .txt File"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnExport"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/btnBatchAdd"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Random Ost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="22dp"
+        android:id="@+id/btnRandomOst"
+        android:layout_below="@+id/btnExport"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
