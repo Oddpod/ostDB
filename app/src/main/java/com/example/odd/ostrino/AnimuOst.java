@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +34,6 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     private String TAG = "OstInfo";
     DBHandler db;
     List<Ost> ostList;
-    String path;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,29 +71,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
 
             @Override
             public void onClick(View v) {
-                ostList = db.getAllOsts();
-                dtb = db.getWritableDatabase();
                 showFileChooser();
-                System.out.println(path);
-                try {
-                    InputStream is = new FileInputStream(path);
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                    String line;
-                    while((line = reader.readLine()) != null) {
-                        Ost ost = new Ost();
-                        String[] lineArray = line.split("; ");
-                        ost.setTitle(lineArray[0]);
-                        ost.setShow(lineArray[1]);
-                        ost.setTags(lineArray[2]);
-                        ost.setUrl(lineArray[3]);
-                        if (ostList.contains(ost)){
-                            System.out.println( ost);
-                            db.addNewOst(ost);
-                        }
-                    }
-                }catch (java.io.IOException e){
-                    System.out.println("File not found");
-                }
 
             }
         });
@@ -112,7 +88,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                     //System.out.println(os.toString());
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
+                    intent.setType("*/*");
                     startActivity(intent);
                     for( Ost ost : ostList){
 
@@ -164,14 +140,14 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // TODO Auto-generated method stub
+        System.out.println(resultCode + requestCode + data.getData().toString());
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+                Uri currFileURI = data.getData();
+                String path = currFileURI.getPath();
+                writeToFile(currFileURI);
+        }
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1) {
-            System.out.println("HELOOOOOOOOOOOOOOOOOO");
-            Uri currFileURI = data.getData();
-            path = currFileURI.getPath();
-        }}
+    }
 
     private void showFileChooser() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
@@ -187,5 +163,45 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
             // Potentially direct the user to the Market with a Dialog
             Toast.makeText(getApplicationContext(), "Please install a File Manager.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void writeToFile(Uri uri){
+        try {
+            //System.out.println(path);
+            File file = new File(getPath(uri));
+            ostList = db.getAllOsts();
+            dtb = db.getWritableDatabase();
+            InputStream is2 = getContentResolver().openInputStream(uri);
+            InputStream is = new FileInputStream(file);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is2));
+            String line;
+            while((line = reader.readLine()) != null) {
+                Ost ost = new Ost();
+                System.out.println(line);
+                String[] lineArray = line.split("; ");
+                ost.setTitle(lineArray[0]);
+                ost.setShow(lineArray[1]);
+                ost.setTags(lineArray[2]);
+                ost.setUrl(lineArray[3]);
+                if (ostList.contains(ost)){
+                    System.out.println( ost);
+                    db.addNewOst(ost);
+                }
+            }
+        }catch (java.io.IOException e){
+            System.out.println("File not found");
+        }
+    }
+
+    public String getPath(Uri uri)
+    {
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor == null) return null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String s=cursor.getString(column_index);
+        cursor.close();
+        return s;
     }
 }
