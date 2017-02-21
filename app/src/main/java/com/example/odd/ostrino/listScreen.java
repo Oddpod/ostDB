@@ -39,6 +39,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private String filterText;
     private TextWatcher textWatcher;
     private TableRow tr_head, tR;
+    Button btnDelHeader;
     private TextView title_header, show_header, tags_header, delete_header, label_title, label_show, label_tags;
 
     public ListScreen() {
@@ -83,12 +84,20 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         title_header = (TextView) findViewById(R.id.titleHeader);
         show_header = (TextView) findViewById(R.id.showHeader);
         tags_header = (TextView) findViewById(R.id.tagsHeader);
-        delete_header = (TextView) findViewById(R.id.deleteHeader);
+        btnDelHeader = (Button) findViewById(R.id.btnDelHeader);
 
         title_header.setText("Title");
         show_header.setText("Show");
         tags_header.setText("Tags");
-        delete_header.setText("Delete");
+        btnDelHeader.setText("Delete");
+
+        btnDelHeader.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         allOsts = db.getAllOsts();
 

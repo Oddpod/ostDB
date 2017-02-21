@@ -57,12 +57,12 @@
                 android:textColor="#f100"
                 android:text="Title"
                 android:textSize="18sp"></TextView>
-            <TextView
-                android:id="@+id/deleteHeader"
-                android:padding="5dp"
-                android:textColor="#f100"
-                android:text="Title"
-                android:textSize="18sp"></TextView>
+
+                <Button
+                    android:text="Delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnDelHeader" />
             </TableRow>
         </TableLayout>
     </ScrollView>
