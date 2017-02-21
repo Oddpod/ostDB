@@ -1,6 +1,5 @@
 package com.example.odd.ostrino;
 
-import android.app.Activity;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,15 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import java.io.OutputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Random;
 
@@ -143,8 +136,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         System.out.println(resultCode + requestCode + data.getData().toString());
         if (requestCode == 1 && resultCode == RESULT_OK) {
                 Uri currFileURI = data.getData();
-                String path = currFileURI.getPath();
-                writeToFile(currFileURI);
+                readFromFile(currFileURI);
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -165,15 +157,12 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         }
     }
 
-    public void writeToFile(Uri uri){
+    public void readFromFile(Uri uri){
         try {
-            //System.out.println(path);
-            File file = new File(getPath(uri));
             ostList = db.getAllOsts();
             dtb = db.getWritableDatabase();
-            InputStream is2 = getContentResolver().openInputStream(uri);
-            InputStream is = new FileInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is2));
+            InputStream is = getContentResolver().openInputStream(uri);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while((line = reader.readLine()) != null) {
                 Ost ost = new Ost();
@@ -183,8 +172,8 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 ost.setShow(lineArray[1]);
                 ost.setTags(lineArray[2]);
                 ost.setUrl(lineArray[3]);
-                if (ostList.contains(ost)){
-                    System.out.println( ost);
+                if (!ostList.contains(ost)){
+                    System.out.println(ost);
                     db.addNewOst(ost);
                 }
             }
