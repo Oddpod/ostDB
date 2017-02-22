@@ -29,7 +29,7 @@ import java.util.List;
 
 public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener {
 
-
+    private int ostReplaceId;
     private List<Ost> allOsts;
     private TableLayout tableLayout;
     private float rowTextSize = 11;
@@ -173,7 +173,12 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             public void onClick(View v) {
                 db.deleteOst(id);
                 tR.removeAllViews();
-                Toast.makeText(getApplicationContext(), title + " was deleted from database", Toast.LENGTH_LONG).show();
+                cleanTable(tableLayout);
+                allOsts = db.getAllOsts();
+                for (Ost ost : allOsts) {
+                    addRow(ost);
+                }
+                Toast.makeText(getApplicationContext(), title + " was deleted from database", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -185,8 +190,10 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 System.out.println(ost.toString());
                 AddScreen dialog = new AddScreen();
                 dialog.show(getFragmentManager(), TAG);
+                ostReplaceId = ost.getId();
                 dialog.setText(ost);
-                Toast.makeText(getApplicationContext(), " Editing Ost ", Toast.LENGTH_LONG).show();
+
+                //Toast.makeText(getApplicationContext(), " Editing Ost ", Toast.LENGTH_LONG).show();
                 return false;
             }
         });
@@ -208,9 +215,15 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         EditText entUrl = (EditText) dialog.getDialog().findViewById(R.id.edtUrl);
         String url = entUrl.getText().toString();
         Ost ost = new Ost(title, show, tags, url);
+        ost.setId(ostReplaceId);
 
         db.updateOst(ost);
-        Toast.makeText(getApplicationContext(), ost.getTitle() + " updated ost", Toast.LENGTH_LONG).show();
+        cleanTable(tableLayout);
+        allOsts = db.getAllOsts();
+        for (Ost ost2 : allOsts) {
+            addRow(ost2);
+        }
+        Toast.makeText(getApplicationContext(), "updated ost: " + ost.getTitle(), Toast.LENGTH_LONG).show();
     }
 
     private void cleanTable(TableLayout table) {

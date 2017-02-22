@@ -129,5 +129,4 @@ public class DBHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.replace(OST_TABLE, null, values);
     }
-
 }

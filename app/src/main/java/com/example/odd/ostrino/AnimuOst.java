@@ -12,13 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Random;
@@ -104,9 +103,15 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         EditText entUrl = (EditText) dialog.getDialog().findViewById(R.id.edtUrl);
         String url = entUrl.getText().toString();
         Ost ost = new Ost(title, show, tags, url);
+        boolean alreadyAdded = checkiIfInDB(ost);
 
-        db.addNewOst(ost);
-        Toast.makeText(getApplicationContext(), ost.getTitle() + " added", Toast.LENGTH_LONG).show();
+        if(!alreadyAdded){
+            db.addNewOst(ost);
+            Toast.makeText(getApplicationContext(), ost.getTitle() + " added", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(this, ost.getTitle() + " From " + ost.getShow() + " has already been added", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void launchListScreen(){
@@ -122,7 +127,12 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         }
         if (requestCode == 2 && resultCode == RESULT_OK) {
             Uri currFileURI = data.getData();
-            writeToFile(currFileURI);
+            try{
+                writeToFile(currFileURI);
+
+            }catch(java.io.IOException e){
+                System.out.println(" caught IOexception");
+            }
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -160,8 +170,6 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
 
     public void readFromFile(Uri uri){
         try {
-            ostList = db.getAllOsts();
-            dtb = db.getWritableDatabase();
             InputStream is = getContentResolver().openInputStream(uri);
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
             String line;
@@ -173,8 +181,8 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 ost.setShow(lineArray[1]);
                 ost.setTags(lineArray[2]);
                 ost.setUrl(lineArray[3]);
-                if (!ostList.contains(ost)){
-                    //System.out.println(ost);
+                boolean alreadyInDB = checkiIfInDB(ost);
+                if (!alreadyInDB){
                     db.addNewOst(ost);
                 }
             }
@@ -183,14 +191,15 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         }
     }
 
-    public void writeToFile(Uri uri){
-        ostList = db.getAllOsts();
+    public void writeToFile(Uri uri) throws IOException{
+        ostList= db.getAllOsts();
         try {
             String filePath = uri.getPath();
             File file = new File(filePath);
             file.createNewFile();
             System.out.println(file.toString());
-            FileOutputStream fos = new FileOutputStream(file);
+            FileOutputStream fos = new FileOutputStream(file, true);
+            //OutputStream os = getContentResolver().openOutputStream(uri);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             String line;
             for( Ost ost : ostList){
@@ -201,12 +210,24 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 String url = ost.getUrl();
                 line = title + "; " + show + "; " + tags + "; " + url + "; ";
                 System.out.println(line);
-                //osw.write(line + "\n");
+                osw.write(line + "\n");
             }
             //fos.close();
             //osw.close();
-        }catch (Exception e){
-            System.out.println("File not found");
+        }catch (java.io.IOException e){
+            throw new java.io.IOException("File not found");
+            //System.out.println("File not found");
         }
     }
+
+    public boolean checkiIfInDB(Ost ost) {
+        ostList = db.getAllOsts();
+        String ostString = ost.toString().toLowerCase();
+            for (Ost ostFromDB : ostList){
+                if(ostFromDB.toString().toLowerCase().equals(ostString)){
+                    return true;
+                }
+            }
+        return false;
+        }
 }
