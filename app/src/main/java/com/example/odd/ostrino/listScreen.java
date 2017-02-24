@@ -27,7 +27,7 @@ import java.util.List;
  * Created by Odd on 12.02.2017.
  */
 
-public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener {
+public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener, FunnyJunk.YareYareListener{
 
     private int ostReplaceId;
     private List<Ost> allOsts;
@@ -36,6 +36,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private EditText filter;
     private DBHandler db;
     private String TAG = "OstInfo";
+    private String TAG2 = "Jojo";
     private String filterText;
     private TextWatcher textWatcher;
     private TableRow tr_head, tR;
@@ -63,6 +64,10 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             public void afterTextChanged(Editable s) {
                 filterText = filter.getText().toString();
                 filterText = filterText.toLowerCase();
+                if(filterText.equals("muda muda muda")){
+                    FunnyJunk dialog = new FunnyJunk();
+                    dialog.show(getFragmentManager(), TAG2);
+                }
                 cleanTable(tableLayout);
                 for (Ost ost : allOsts) {
                     addRow(ost);

@@ -18,13 +18,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Random;
 
 public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener {
 
-    Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst;
+    Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst, btnTestConnection;
     SQLiteDatabase dtb;
     private String TAG = "OstInfo";
     DBHandler db;
@@ -44,6 +45,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         btnAddOsts = (Button) findViewById(R.id.btnBatchAdd);
         btnExportOsts = (Button) findViewById(R.id.btnExport);
         btnRandomOst = (Button) findViewById(R.id.btnRandomOst);
+        btnTestConnection = (Button) findViewById(R.id.btnTestConnection);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +89,15 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 Ost ost = db.getOst(rndId);
                 String url = ost.getUrl();
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            }
+        });
+
+        btnTestConnection.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                ConnectionHandler connHandler = new ConnectionHandler();
+                ConnectionHandler.run()
             }
         });
 
@@ -194,13 +205,13 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     public void writeToFile(Uri uri) throws IOException{
         ostList= db.getAllOsts();
         try {
-            String filePath = uri.getPath();
+            /*String filePath = uri.getPath();
             File file = new File(filePath);
             file.createNewFile();
             System.out.println(file.toString());
-            FileOutputStream fos = new FileOutputStream(file, true);
-            //OutputStream os = getContentResolver().openOutputStream(uri);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            FileOutputStream fos = new FileOutputStream(file, true);*/
+            OutputStream os = getContentResolver().openOutputStream(uri);
+            OutputStreamWriter osw = new OutputStreamWriter(os);
             String line;
             for( Ost ost : ostList){
 

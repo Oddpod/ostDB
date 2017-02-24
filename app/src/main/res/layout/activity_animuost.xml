@@ -54,4 +54,13 @@
         android:id="@+id/btnRandomOst"
         android:layout_below="@+id/btnExport"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Test connection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:id="@+id/btnTestConnection"
+        android:layout_below="@+id/btnRandomOst"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
