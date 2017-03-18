@@ -28,7 +28,7 @@ import java.util.Random;
 import mpc.MPClient;
 import mpc.Packet;
 
-public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener{
+public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener, View.OnClickListener{
 
     Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst, btnTestConnection;
     SQLiteDatabase dtb;
@@ -53,62 +53,53 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         btnRandomOst = (Button) findViewById(R.id.btnRandomOst);
         btnTestConnection = (Button) findViewById(R.id.btnTestConnection);
 
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AddScreen dialog = new AddScreen();
-                dialog.show(getFragmentManager(), TAG);
-            }
-        });
+        btnAdd.setOnClickListener(this);
+        btnViewList.setOnClickListener(this);
+        btnAddOsts.setOnClickListener(this);
+        btnExportOsts.setOnClickListener(this);
+        btnRandomOst.setOnClickListener(this);
+        btnTestConnection.setOnClickListener(this);
+        }
 
-        btnViewList.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //View Block Number List in the Text View Widget
+    //Set button behaviours
+    public void onClick(View v){
+        switch (v.getId()) {
+            case R.id.btnViewOstList: {
                 new ListScreen();
                 launchListScreen();
+                break;
             }
-        });
-
-        btnAddOsts.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+            case R.id.btnAddOst: {
+                AddScreen dialog = new AddScreen();
+                dialog.show(getFragmentManager(), TAG);
+                break;
+            }
+            case R.id.btnBatchAdd: {
                 chooseFile();
-
+                break;
             }
-        });
-        btnExportOsts.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) { chooseFileDir();
-
+            case R.id.btnExport: {
+                chooseFileDir();
+                break;
             }
-        });
-        btnRandomOst.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
+            case R.id.btnRandomOst: {
                 ostList = db.getAllOsts();
                 Random rnd = new Random();
                 int rndId = rnd.nextInt(ostList.size());
                 Ost ost = db.getOst(rndId);
                 String url = ost.getUrl();
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                break;
             }
-        });
-
-        btnTestConnection.setOnClickListener(new View.OnClickListener(){
-
-            public void onClick(View v) {
+            case R.id.btnTestConnection:{
                 System.out.println("hmm");
                 //MPClient mpc = new MPClient();
                 Ost ost = ostList.get(0);
                 //mpc.sendOst(ost);
+                break;
             }
-        });
-
         }
+    }
 
     @Override
     public void onSaveButtonClick(DialogFragment dialog) {
