@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.esotericsoftware.minlog.Log;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,12 +25,16 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Random;
 
-public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener {
+import mpc.MPClient;
+import mpc.Packet;
+
+public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener{
 
     Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst, btnTestConnection;
     SQLiteDatabase dtb;
     private String TAG = "OstInfo";
     DBHandler db;
+    Ost lastAddedOst;
     List<Ost> ostList;
 
     @Override
@@ -59,7 +65,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
             @Override
             public void onClick(View v) {
                 //View Block Number List in the Text View Widget
-                ListScreen ls = new ListScreen();
+                new ListScreen();
                 launchListScreen();
             }
         });
@@ -94,10 +100,11 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
 
         btnTestConnection.setOnClickListener(new View.OnClickListener(){
 
-            @Override
             public void onClick(View v) {
-                ConnectionHandler connHandler = new ConnectionHandler();
-                ConnectionHandler.run()
+                System.out.println("hmm");
+                //MPClient mpc = new MPClient();
+                Ost ost = ostList.get(0);
+                //mpc.sendOst(ost);
             }
         });
 
@@ -113,15 +120,16 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         String tags = entTags.getText().toString();
         EditText entUrl = (EditText) dialog.getDialog().findViewById(R.id.edtUrl);
         String url = entUrl.getText().toString();
-        Ost ost = new Ost(title, show, tags, url);
-        boolean alreadyAdded = checkiIfInDB(ost);
+        lastAddedOst = new Ost(title, show, tags, url);
+        boolean alreadyAdded = checkiIfInDB(lastAddedOst);
 
         if(!alreadyAdded){
-            db.addNewOst(ost);
-            Toast.makeText(getApplicationContext(), ost.getTitle() + " added", Toast.LENGTH_SHORT).show();
+            db.addNewOst(lastAddedOst);
+            Toast.makeText(getApplicationContext(), lastAddedOst.getTitle() + " added", Toast.LENGTH_SHORT).show();
         }
         else{
-            Toast.makeText(this, ost.getTitle() + " From " + ost.getShow() + " has already been added", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, lastAddedOst.getTitle() + " From " + lastAddedOst.getShow() + " has already been added", Toast.LENGTH_SHORT).show();
+            lastAddedOst = null;
         }
     }
 
@@ -149,7 +157,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     }
 
     private void chooseFile() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         System.out.println("File Chooser launched");

@@ -1,50 +1,55 @@
 package com.example.odd.ostrino;
-
 /**
  * Created by Odd on 25.02.2017.
  */
 
-import java.io.IOException;
-import java.io.InputStream;
+public class ConnectionHandler{
 
-import org.json.JSONObject;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-public class ConnectionHandler {
-
-    static InputStream is = null;
-    static JSONObject jObj = null;
-    static String json = "";
-    public static MediaType JSON;
-    OkHttpClient client;
+    /*private Connection con;
+    private String url, username, password;
+    private Connection myConn;
+    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 
     // constructor
     public ConnectionHandler() {
-        client = new OkHttpClient();
-        JSON = MediaType.parse("application/json; charset=utf-8");
+        url = "jdbc:mysql://sql11.freemysqlhosting.net:3306/sql11160769";
+        username = " sql11160769";
+        password = " Rdi4bykUhS";
+        try {
+            // The newInstance() call is a work around for some
+            // broken Java implementations
+            Class.forName(JDBC_DRIVER).newInstance();
+        } catch (Exception ex) {
+            System.out.println("Error loading driver");
+        }
+
+        //client = new OkHttpClient();
+        //JSON = MediaType.parse("application/json; charset=utf-8");
     }
 
-    String run(String url) throws IOException {
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+    public void startConnectiontoDatabaseAndUpdate(String sql) throws SQLException {
+        myConn = DriverManager.getConnection(url, username, password);
+        Statement myStat = myConn.createStatement();
+        myStat.executeUpdate(sql);
     }
 
-    String post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+    public ResultSet startConnectiontoDatabaseAndQuery(String sql) throws SQLException{
+        myConn = DriverManager.getConnection(url, username, password);
+        Statement myStat = myConn.createStatement();
+        ResultSet myRsi = myStat.executeQuery(sql);
+        return myRsi;
     }
+
+    public void insertOstTODB( Ost ost) throws SQLException {
+        String title = ost.getTitle();
+        String show = ost.getShow();
+        String tags = ost.getTags();
+        String url = ost.getUrl();
+
+        String sql = " insert into OSTrino "
+                + "(title, show, tags, url)"
+                + "values( '" + title + "', '" + show + "', '" + tags + "', '" + url + "')";
+        startConnectiontoDatabaseAndUpdate(sql);
+    }*/
 }
