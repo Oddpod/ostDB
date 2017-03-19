@@ -6,6 +6,7 @@ import com.esotericsoftware.minlog.Log;
 import com.example.odd.ostrino.Ost;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by Odd on 07.03.2017.
@@ -15,10 +16,11 @@ public class MPClient {
     public Client client;
     public Ost ost;
     private NetworkListener nl;
-    private String serverIp = "2001:0:9d38:90d7:105c:6a9d:7e0e:1817";
+    private String serverIp = "192.168.1.3";
+    private int tcpPort = 54555;
+    private int udpPort = 54556;
 
     public MPClient() {
-        Log.set(Log.LEVEL_DEBUG);
         client = new Client();
         register();
 
@@ -30,7 +32,7 @@ public class MPClient {
         client.start();
 
         try{
-            client.connect(5000, serverIp, 54555);
+            client.connect(5000, serverIp, tcpPort);
         } catch(IOException e){
             e.printStackTrace();
             System.out.println("heyooooooooooo");
@@ -44,9 +46,15 @@ public class MPClient {
         kryo.register(Packet.Packet1LoginAnswer.class);
         kryo.register(Packet.Packet2Message.class);
         kryo.register(Packet.Packet3Ost.class);
+        kryo.register(Ost.class);
+        kryo.register(Packet.Packet4UpdateRequest.class);
     }
 
     public void sendOst(Ost ost){
-        nl.setOst(ost);
+        nl.addOstToList(ost);
+    }
+
+    public List<Ost> receiveOsts(){
+        return nl.getreceivedOsts();
     }
 }

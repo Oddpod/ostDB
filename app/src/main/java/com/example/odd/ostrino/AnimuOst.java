@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Random;
 
 import mpc.MPClient;
-import mpc.Packet;
 
 public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener, View.OnClickListener{
 
@@ -41,6 +41,10 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animuost);
+
+        //Needed to access server
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         db = new DBHandler(this);
         //Reset database
@@ -92,10 +96,21 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 break;
             }
             case R.id.btnTestConnection:{
-                System.out.println("hmm");
-                //MPClient mpc = new MPClient();
-                Ost ost = ostList.get(0);
-                //mpc.sendOst(ost);
+                Toast.makeText(getApplicationContext(), "text showing", Toast.LENGTH_SHORT).show();
+                Log.set(Log.LEVEL_DEBUG);
+                MPClient mpc = new MPClient();
+                ostList = db.getAllOsts();
+                for(Ost ost : ostList) {
+                    mpc.sendOst(ost);
+                }
+                //List<Ost> receivedOsts = mpc.receiveOsts();
+                //System.out.println(receivedOsts);
+                for(Ost ost : mpc.receiveOsts()) {
+                    System.out.println(ost);
+                    if(!checkiIfInDB(ost)){
+                        db.addNewOst(ost);
+                    }
+                }
                 break;
             }
         }

@@ -7,13 +7,17 @@ import com.esotericsoftware.minlog.Log;
 import com.example.odd.ostrino.DBHandler;
 import com.example.odd.ostrino.Ost;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Odd on 07.03.2017.
  */
 
 public class NetworkListener extends Listener {
     private Client client;
-    private Ost ost;
+    private List<Ost> ostList = new ArrayList();
+    private List<Ost> receivedOsts = new ArrayList();
 
     public void init(Client client){
         this.client = client;
@@ -29,25 +33,40 @@ public class NetworkListener extends Listener {
     }
 
     public void received(Connection c, Object o){
-        if( o instanceof Packet.Packet0LoginRequest){
+        if( o instanceof Packet.Packet1LoginAnswer){
             boolean answer = ((Packet.Packet1LoginAnswer) o).accepted;
 
             if(answer){
-                Packet.Packet3Ost ostPacket = new Packet.Packet3Ost();
-                ostPacket.ost = ost;
-                client.sendTCP(ostPacket);
+                for( Ost ost : ostList) {
+                    Packet.Packet3Ost ostPacket = new Packet.Packet3Ost();
+                    ostPacket.ost = ost;
+                    client.sendTCP(ostPacket);
+                }
+                Packet.Packet4UpdateRequest updateRequest = new Packet.Packet4UpdateRequest();
+                client.sendTCP(updateRequest);
+                }
             } else{
                 c.close();
             }
 
-        }
         if( o instanceof Packet.Packet2Message){
             String message = ((Packet.Packet2Message)o).message;
             Log.info(message);
         }
+
+        if(o instanceof Packet.Packet3Ost){
+            Ost ost = ((Packet.Packet3Ost)o).ost;
+            System.out.println(ost);
+            receivedOsts.add(ost);
+            System.out.println("Received osts: " + receivedOsts);
+        }
     }
 
-    public void setOst(Ost ost){
-        this.ost = ost;
+    public void addOstToList(Ost ost){
+        this.ostList.add(ost);
+    }
+
+    public List<Ost> getreceivedOsts(){
+        return receivedOsts;
     }
 }

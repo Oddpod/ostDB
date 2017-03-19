@@ -133,7 +133,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         label_title.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println(url);
+                //System.out.println(url);
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
             }
 

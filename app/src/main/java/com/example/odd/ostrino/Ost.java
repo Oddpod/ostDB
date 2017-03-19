@@ -34,6 +34,7 @@ public class Ost {
     @Override
     public String toString() {
         return "Ost{" +
+                "id=" + id + '\'' +
                 "title='" + title + '\'' +
                 ", show='" + show + '\'' +
                 ", tags=" + tags + '\'' +
