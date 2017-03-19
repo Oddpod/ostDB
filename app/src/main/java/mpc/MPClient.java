@@ -55,6 +55,7 @@ public class MPClient {
     }
 
     public List<Ost> receiveOsts(){
+        System.out.println(nl.getreceivedOsts());
         return nl.getreceivedOsts();
     }
 }

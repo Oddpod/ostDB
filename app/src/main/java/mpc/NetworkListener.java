@@ -37,28 +37,35 @@ public class NetworkListener extends Listener {
             boolean answer = ((Packet.Packet1LoginAnswer) o).accepted;
 
             if(answer){
+                Packet.Packet4UpdateRequest updateRequest = new Packet.Packet4UpdateRequest();
+                client.sendTCP(updateRequest);
+
                 for( Ost ost : ostList) {
                     Packet.Packet3Ost ostPacket = new Packet.Packet3Ost();
                     ostPacket.ost = ost;
                     client.sendTCP(ostPacket);
                 }
-                Packet.Packet4UpdateRequest updateRequest = new Packet.Packet4UpdateRequest();
-                client.sendTCP(updateRequest);
                 }
             } else{
-                c.close();
+                //c.close();
             }
 
         if( o instanceof Packet.Packet2Message){
             String message = ((Packet.Packet2Message)o).message;
             Log.info(message);
+            if(message.equals("done")){
+                c.close();
+            }
         }
 
         if(o instanceof Packet.Packet3Ost){
+            Packet.Packet2Message message = new Packet.Packet2Message();
+            message.message = "received";
+            client.sendTCP(message);
             Ost ost = ((Packet.Packet3Ost)o).ost;
             System.out.println(ost);
             receivedOsts.add(ost);
-            System.out.println("Received osts: " + receivedOsts);
+            //System.out.println("Received osts: " + receivedOsts);
         }
     }
 

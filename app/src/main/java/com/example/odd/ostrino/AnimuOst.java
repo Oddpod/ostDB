@@ -103,9 +103,9 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 for(Ost ost : ostList) {
                     mpc.sendOst(ost);
                 }
-                //List<Ost> receivedOsts = mpc.receiveOsts();
-                //System.out.println(receivedOsts);
-                for(Ost ost : mpc.receiveOsts()) {
+                List<Ost> receivedOsts = mpc.receiveOsts();
+                System.out.println( "Received osts: " + receivedOsts);
+                for(Ost ost : receivedOsts) {
                     System.out.println(ost);
                     if(!checkiIfInDB(ost)){
                         db.addNewOst(ost);
