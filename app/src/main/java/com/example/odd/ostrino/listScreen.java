@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +42,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private String filterText;
     private TextWatcher textWatcher;
     private TableRow tr_head, tR;
-    Button btnDelHeader;
+    Button btnDelHeader, btnPlayAll;
     private TextView title_header, show_header, tags_header, delete_header, label_title, label_show, label_tags;
 
     public ListScreen() {
@@ -76,6 +78,26 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             }
         };
         filter.addTextChangedListener(textWatcher);
+        btnPlayAll = (Button) findViewById(R.id.btnPlayAll);
+        btnPlayAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<String> urlList = new ArrayList<>();
+                for (Ost ost : allOsts) {
+                    urlList.add(ost.getUrl());
+                }
+                System.out.println(urlList);
+                YoutubeFragment yFragment = new YoutubeFragment();
+                yFragment.setVideoIds(urlList);
+                yFragment.playAll(true);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .add(R.id.activity_listscreen, yFragment)
+                        .addToBackStack(yFragment.toString())
+                        .commit();
+            }
+
+        });
         tableLayout = (TableLayout) findViewById(R.id.tlOstTable);
         tr_head = (TableRow) findViewById(R.id.ostHeaderRow);
         createList();
@@ -129,16 +151,6 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         label_title.setTextSize(rowTextSize);
         label_title.setPadding(5, 5, 5, 5);
 
-        //Launches url when you click the title
-        label_title.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //System.out.println(url);
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            }
-
-        });
-
         tR.addView(label_title);
 
         TextView label_show = new TextView(getApplicationContext());
@@ -163,7 +175,13 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             public void onClick(View v) {
                 System.out.println(url);
                 //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                new YoutubePlayerActivity();
+                YoutubeFragment fragment = new YoutubeFragment();
+                fragment.setVideoId(url);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .add(R.id.activity_listscreen, fragment)
+                        .addToBackStack(fragment.toString())
+                        .commit();
             }
 
         });

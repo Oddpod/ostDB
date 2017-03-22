@@ -3,15 +3,12 @@ package com.example.odd.ostrino;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
-
-import java.util.ArrayList;
 
 /**
  * Created by Odd on 22.03.2017.
@@ -48,7 +45,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity  implements YouTu
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
         player = youTubePlayer;
         if (!wasRestored)
-            player.loadVideo(videoId);
+            player.loadVideo("fhWaJi1Hsfo");
     }
 
     @Override
