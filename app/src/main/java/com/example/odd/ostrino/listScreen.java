@@ -162,7 +162,8 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             @Override
             public void onClick(View v) {
                 System.out.println(url);
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                new YoutubePlayerActivity();
             }
 
         });
