@@ -53,9 +53,8 @@ public class YoutubeFragment extends Fragment {
             @Override
             public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
                 if (!wasRestored) {
-                    //System.out.println(videoId);
-                    //System.out.println(videoIds);
                     player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
+                    player.setManageAudioFocus(true);
                     if(playQueue){
                         player.loadVideos(videoIds);
 

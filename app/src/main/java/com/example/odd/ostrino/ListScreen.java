@@ -14,6 +14,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -29,10 +30,11 @@ import java.util.List;
  * Created by Odd on 12.02.2017.
  */
 
-public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener, FunnyJunk.YareYareListener{
+public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener, FunnyJunk.YareYareListener, View.OnClickListener {
 
     private int ostReplaceId;
     private List<Ost> allOsts;
+    private List<CheckBox> checkBoxes;
     private TableLayout tableLayout;
     private float rowTextSize = 11;
     private EditText filter;
@@ -41,9 +43,9 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private String TAG2 = "Jojo";
     private String filterText;
     private TextWatcher textWatcher;
-    private TableRow tr_head, tR;
-    Button btnDelHeader, btnPlayAll;
-    private TextView title_header, show_header, tags_header, delete_header, label_title, label_show, label_tags;
+    private TableRow tR;
+    Button btnDelHeader, btnPlayAll, btnplaySelected;
+    private TextView title_header, show_header, tags_header, label_title, label_show, label_tags;
 
     public ListScreen() {
     }
@@ -57,16 +59,18 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         filter = (EditText) findViewById(R.id.edtFilter);
         textWatcher = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
                 filterText = filter.getText().toString();
                 filterText = filterText.toLowerCase();
-                if(filterText.equals("muda muda muda")){
+                if (filterText.equals("muda muda muda")) {
                     FunnyJunk dialog = new FunnyJunk();
                     dialog.show(getFragmentManager(), TAG2);
                 }
@@ -79,31 +83,17 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         };
         filter.addTextChangedListener(textWatcher);
         btnPlayAll = (Button) findViewById(R.id.btnPlayAll);
-        btnPlayAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                List<String> urlList = new ArrayList<>();
-                for (Ost ost : allOsts) {
-                    urlList.add(ost.getUrl());
-                }
-                System.out.println(urlList);
-                YoutubeFragment yFragment = new YoutubeFragment();
-                yFragment.setVideoIds(urlList);
-                yFragment.playAll(true);
-                FragmentManager manager = getSupportFragmentManager();
-                manager.beginTransaction()
-                        .add(R.id.activity_listscreen, yFragment)
-                        .addToBackStack(yFragment.toString())
-                        .commit();
-            }
+        btnplaySelected = (Button) findViewById(R.id.btnPlaySelected);
 
-        });
+        btnPlayAll.setOnClickListener(this);
+        btnplaySelected.setOnClickListener(this);
+
         tableLayout = (TableLayout) findViewById(R.id.tlOstTable);
-        tr_head = (TableRow) findViewById(R.id.ostHeaderRow);
         createList();
     }
 
     public void createList() {
+        checkBoxes = new ArrayList<>();
         //tableLayout.removeAllViews();
         //tableLayout.setWeightSum(3);
 
@@ -118,13 +108,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         tags_header.setText("Tags");
         btnDelHeader.setText("Delete");
 
-        btnDelHeader.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        btnDelHeader.setOnClickListener(this);
 
         allOsts = db.getAllOsts();
 
@@ -150,7 +134,6 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         label_title.setTextColor(Color.BLACK);
         label_title.setTextSize(rowTextSize);
         label_title.setPadding(5, 5, 5, 5);
-
         tR.addView(label_title);
 
         TextView label_show = new TextView(getApplicationContext());
@@ -180,18 +163,18 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
                         .add(R.id.activity_listscreen, fragment)
-                        .addToBackStack(fragment.toString())
+                        .addToBackStack(null)
                         .commit();
             }
 
         });
 
-        final Button deleteBtn = new Button(getApplicationContext());
-        deleteBtn.setId(View.generateViewId());
-        deleteBtn.setText("Delete");
-        deleteBtn.setPadding(5, 5, 0, 5);
-        deleteBtn.setTextSize(rowTextSize);
-        deleteBtn.setOnClickListener(new View.OnClickListener() {
+        final CheckBox checkBox = new CheckBox(getApplicationContext());
+        checkBox.setId(View.generateViewId());
+        checkBox.setPadding(5, 5, 0, 5);
+        checkBox.setTextSize(rowTextSize);
+        checkBoxes.add(checkBox);
+        /*checkBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -204,9 +187,9 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 }
                 Toast.makeText(getApplicationContext(), title + " was deleted from database", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
-        tR.addView(deleteBtn);
+        tR.addView(checkBox);
         //Long press to edit Ost
         tR.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -257,6 +240,65 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         // Remove all rows except the first one
         if (childCount > 1) {
             table.removeViews(1, childCount - 1);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btnPlayAll: {
+                List<String> urlList = new ArrayList<>();
+                for (Ost ost : allOsts) {
+                    urlList.add(ost.getUrl());
+                }
+                YoutubeFragment yFragment = new YoutubeFragment();
+                yFragment.setVideoIds(urlList);
+                yFragment.playAll(true);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .replace(R.id.activity_listscreen, yFragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+            case R.id.btnPlaySelected:{
+                int i = 0;
+                List<String> playList = new ArrayList<>();
+                for (CheckBox checkBox : checkBoxes){
+                    if(checkBox.isChecked()){
+                        String url = allOsts.get(i).getUrl();
+                        playList.add(url);
+                        checkBox.setChecked(false);
+                    }
+                }
+                YoutubeFragment yFragment = new YoutubeFragment();
+                yFragment.setVideoIds(playList);
+                yFragment.playAll(true);
+                FragmentManager manager = getSupportFragmentManager();
+                manager.beginTransaction()
+                        .add(R.id.activity_listscreen, yFragment)
+                        .addToBackStack(null)
+                        .commit();
+
+            }
+            case R.id.btnDelHeader: {
+                int i = 0;
+                for (CheckBox checkBox : checkBoxes) {
+
+                    if (checkBox.isChecked()) {
+                        int id = allOsts.get(i).getId();
+                        db.deleteOst(id);
+                    }
+
+                    i++;
+                }
+                tR.removeAllViews();
+                cleanTable(tableLayout);
+                allOsts = db.getAllOsts();
+                checkBoxes.clear(); //cleaar list of Checkboxes
+                for (Ost ost : allOsts) {
+                    addRow(ost);
+                }
+            }
         }
     }
 }
