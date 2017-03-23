@@ -11,31 +11,61 @@
     android:paddingTop="1dp"
     tools:context="com.example.odd.ostrino.ListScreen">
 
-    <EditText
-        android:id="@+id/edtFilter"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dip"
-        android:ems="10"
-        android:hint="Filter"
-        android:inputType="textPersonName"
-        android:textColor="#f100"
-        android:textCursorDrawable="@drawable/black" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <TableRow
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btnPlayAll"
-            android:layout_width="192dp"
-            android:layout_height="wrap_content"
-            android:text="Play all"/>
-        <Button
-            android:id="@+id/btnPlaySelected"
-            android:layout_width="191dp"
-            android:layout_height="wrap_content"
-            android:text="Play Selected" />
+        <TableLayout
+            android:layout_width="386dp"
+            android:layout_height="wrap_content">
 
-    </TableRow>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <EditText
+                    android:id="@+id/edtFilter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:hint="Filter"
+                    android:inputType="textPersonName"
+                    android:textColor="#f100"
+                    android:textCursorDrawable="@drawable/black" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/btnPlayAll"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Play all" />
+
+                <Button
+                    android:id="@+id/btnPlaySelected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:elevation="0dp"
+                    android:text="Play Selected" />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <FrameLayout
+            android:id="@+id/flLandscape"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </FrameLayout>
+
+    </LinearLayout>
 
     <ScrollView
         android:id="@+id/scrollView"

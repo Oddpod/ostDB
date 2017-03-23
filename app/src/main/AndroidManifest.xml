@@ -7,8 +7,10 @@
         android:icon="@drawable/appikon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".AnimuOst">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <activity android:name=".AnimuOst"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="sensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

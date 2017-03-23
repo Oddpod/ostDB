@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +17,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -33,7 +36,7 @@ import java.util.List;
 public class ListScreen extends AppCompatActivity implements AddScreen.AddScreenListener, FunnyJunk.YareYareListener, View.OnClickListener {
 
     private int ostReplaceId;
-    private List<Ost> allOsts;
+    private List<Ost> allOsts, currDispOstList;
     private List<CheckBox> checkBoxes;
     private TableLayout tableLayout;
     private float rowTextSize = 11;
@@ -44,6 +47,9 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private String filterText;
     private TextWatcher textWatcher;
     private TableRow tR;
+    private ScrollView scrollview;
+    private FrameLayout youtubeLandscape;
+    private YoutubeFragment youtubeFragment = null;
     Button btnDelHeader, btnPlayAll, btnplaySelected;
     private TextView title_header, show_header, tags_header, label_title, label_show, label_tags;
 
@@ -88,7 +94,9 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         btnPlayAll.setOnClickListener(this);
         btnplaySelected.setOnClickListener(this);
 
+        youtubeLandscape = (FrameLayout) findViewById(R.id.flLandscape);
         tableLayout = (TableLayout) findViewById(R.id.tlOstTable);
+        currDispOstList = new ArrayList<>(); //Contains all ost in the shown list even when filtered
         createList();
     }
 
@@ -158,36 +166,23 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             public void onClick(View v) {
                 System.out.println(url);
                 //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                YoutubeFragment fragment = new YoutubeFragment();
-                fragment.setVideoId(url);
+                initYoutubeFrag();
+                youtubeFragment.setVideoId(url);
                 FragmentManager manager = getSupportFragmentManager();
                 manager.beginTransaction()
-                        .add(R.id.activity_listscreen, fragment)
+                        .replace(R.id.activity_listscreen, youtubeFragment)
                         .addToBackStack(null)
                         .commit();
             }
 
         });
 
-        final CheckBox checkBox = new CheckBox(getApplicationContext());
+        CheckBox checkBox = new CheckBox(getApplicationContext());
         checkBox.setId(View.generateViewId());
         checkBox.setPadding(5, 5, 0, 5);
         checkBox.setTextSize(rowTextSize);
+        checkBox.setChecked(false);
         checkBoxes.add(checkBox);
-        /*checkBox.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                db.deleteOst(id);
-                tR.removeAllViews();
-                cleanTable(tableLayout);
-                allOsts = db.getAllOsts();
-                for (Ost ost : allOsts) {
-                    addRow(ost);
-                }
-                Toast.makeText(getApplicationContext(), title + " was deleted from database", Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
         tR.addView(checkBox);
         //Long press to edit Ost
@@ -205,8 +200,12 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             }
         });
         if (filterText != null && !ostInfoString.contains(filterText)) {
-            System.out.println(filterText + ostInfoString);
+            //System.out.println(filterText + ostInfoString);
+            currDispOstList.remove(ost);
             tR.removeAllViews();
+        }
+        else{
+            currDispOstList.add(ost);
         }
         tableLayout.addView(tR, new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT, TableLayout.LayoutParams.MATCH_PARENT));
     }
@@ -248,42 +247,39 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         switch (v.getId()) {
             case R.id.btnPlayAll: {
                 List<String> urlList = new ArrayList<>();
-                for (Ost ost : allOsts) {
+                for (Ost ost : currDispOstList) {
                     urlList.add(ost.getUrl());
                 }
-                YoutubeFragment yFragment = new YoutubeFragment();
-                yFragment.setVideoIds(urlList);
-                yFragment.playAll(true);
-                FragmentManager manager = getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.activity_listscreen, yFragment)
-                        .addToBackStack(null)
-                        .commit();
+                //System.out.println("urlList: " + urlList);
+                YoutubeFragment youFragment = new YoutubeFragment();
+                youFragment.setVideoIds(urlList);
+                youFragment.playAll(true);
+                launchYoutuebFrag(youFragment);
             }
             case R.id.btnPlaySelected:{
                 int i = 0;
                 List<String> playList = new ArrayList<>();
-                for (CheckBox checkBox : checkBoxes){
-                    if(checkBox.isChecked()){
+                for (CheckBox box : checkBoxes){
+                    //System.out.println(box.isChecked());
+                    if(box.isChecked()){
+                        //System.out.println("i: " + i);
                         String url = allOsts.get(i).getUrl();
                         playList.add(url);
-                        checkBox.setChecked(false);
+                        box.setChecked(false);
                     }
+                    i++;
                 }
-                YoutubeFragment yFragment = new YoutubeFragment();
-                yFragment.setVideoIds(playList);
-                yFragment.playAll(true);
-                FragmentManager manager = getSupportFragmentManager();
-                manager.beginTransaction()
-                        .add(R.id.activity_listscreen, yFragment)
-                        .addToBackStack(null)
-                        .commit();
+                if(playList.size()> 0){
+                    YoutubeFragment yFragment = new YoutubeFragment();
+                    yFragment.setVideoIds(playList);
+                    yFragment.playAll(true);
+                    launchYoutuebFrag(yFragment);
+                }
 
             }
             case R.id.btnDelHeader: {
                 int i = 0;
                 for (CheckBox checkBox : checkBoxes) {
-
                     if (checkBox.isChecked()) {
                         int id = allOsts.get(i).getId();
                         db.deleteOst(id);
@@ -294,11 +290,24 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 tR.removeAllViews();
                 cleanTable(tableLayout);
                 allOsts = db.getAllOsts();
-                checkBoxes.clear(); //cleaar list of Checkboxes
+                checkBoxes.clear(); //clear list of Checkboxes
                 for (Ost ost : allOsts) {
                     addRow(ost);
                 }
             }
         }
+    }
+    public void initYoutubeFrag(){
+        if(youtubeFragment == null){
+            youtubeFragment = new YoutubeFragment();
+        }
+    }
+
+    public void launchYoutuebFrag(YoutubeFragment frag){
+        FragmentManager manager = getSupportFragmentManager();
+        manager.beginTransaction()
+                .replace(R.id.activity_listscreen, frag)
+                .addToBackStack(null)
+                .commit();
     }
 }
