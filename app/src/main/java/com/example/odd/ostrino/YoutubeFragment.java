@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class YoutubeFragment extends Fragment implements OnInitializedListener, YouTubePlayer.OnFullscreenListener{
+public class YoutubeFragment extends Fragment implements OnInitializedListener{
     // API キー
     private static final String API_KEY = "AIzaSyDSMKvbGUJxKhPz5t4PMFEByD5qFy1sjEA";
 
@@ -75,28 +75,14 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener, 
     // YouTubeプレーヤーの初期化成功
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
-        mPlayer = player;
-        //player.setPlayerStateChangeListener(this);
-        player.setOnFullscreenListener(this);
-        if (mAutoRotation) {
-            player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION
-                    | YouTubePlayer.FULLSCREEN_FLAG_CONTROL_SYSTEM_UI
-                    | YouTubePlayer.FULLSCREEN_FLAG_ALWAYS_FULLSCREEN_IN_LANDSCAPE
-                    | YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
-        } else {
-            player.addFullscreenControlFlag(YouTubePlayer.FULLSCREEN_FLAG_CONTROL_ORIENTATION
-                    | YouTubePlayer.FULLSCREEN_FLAG_CONTROL_SYSTEM_UI
-                    | YouTubePlayer.FULLSCREEN_FLAG_CUSTOM_LAYOUT);
-        }
-            player.setPlayerStyle(YouTubePlayer.PlayerStyle.DEFAULT);
-            player.setManageAudioFocus(true);
+
             if(playQueue){
-                mPlayer.loadVideos(videoIds);
+                player.loadVideos(videoIds);
 
             }else{
-                mPlayer.loadVideo(videoId);
+                player.loadVideo(videoId);
             }
-            mPlayer.play();
+            player.play();
     }
 
     // YouTubeプレーヤーの初期化失敗
@@ -108,28 +94,6 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener, 
         Log.d("errorMessage:", errorMessage);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            if (mPlayer != null)
-                mPlayer.setFullscreen(true);
-        }
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (mPlayer != null)
-                mPlayer.setFullscreen(false);
-        }
-    }
-
-    @Override
-    public void onFullscreen(boolean fullsize) {
-        if (fullsize) {
-            getActivity().setRequestedOrientation(LANDSCAPE_ORIENTATION);
-        } else {
-            getActivity().setRequestedOrientation(PORTRAIT_ORIENTATION);
-        }
-    }
     public void setVideoId(String url){
         videoId = urlToId(url);
     }

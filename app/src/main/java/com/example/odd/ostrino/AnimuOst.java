@@ -12,8 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.esotericsoftware.minlog.Log;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,8 +23,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Random;
-
-import mpc.MPClient;
 
 public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener, View.OnClickListener{
 
@@ -96,20 +92,14 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 break;
             }
             case R.id.btnTestConnection:{
-                Toast.makeText(getApplicationContext(), "text showing", Toast.LENGTH_SHORT).show();
-                Log.set(Log.LEVEL_DEBUG);
-                MPClient mpc = new MPClient();
+                Toast.makeText(getApplicationContext(), "Updating database", Toast.LENGTH_SHORT).show();
+                ServerDBHandler serverDBHandler = new ServerDBHandler();
                 ostList = db.getAllOsts();
-                for(Ost ost : ostList) {
-                    mpc.sendOst(ost);
-                }
-                List<Ost> receivedOsts = mpc.receiveOsts();
-                System.out.println( "Received osts: " + receivedOsts);
-                for(Ost ost : receivedOsts) {
-                    System.out.println(ost);
-                    if(!checkiIfInDB(ost)){
-                        db.addNewOst(ost);
-                    }
+                try{
+                    serverDBHandler.saveOsts(ostList);
+                    ostList = serverDBHandler.getOsts(ostList);
+                } catch (java.sql.SQLException e){
+                    e.printStackTrace();
                 }
                 break;
             }

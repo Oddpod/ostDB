@@ -1,14 +1,10 @@
 package com.example.odd.ostrino;
 
-import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
-import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -23,8 +19,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,11 +162,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 initYoutubeFrag();
                 youtubeFragment.setVideoId(url);
-                FragmentManager manager = getSupportFragmentManager();
-                manager.beginTransaction()
-                        .replace(R.id.activity_listscreen, youtubeFragment)
-                        .addToBackStack(null)
-                        .commit();
+                launchYoutubeFrag(youtubeFragment);
             }
 
         });
@@ -233,6 +223,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     }
 
     private void cleanTable(TableLayout table) {
+        checkBoxes.clear();
 
         int childCount = table.getChildCount();
 
@@ -254,7 +245,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 YoutubeFragment youFragment = new YoutubeFragment();
                 youFragment.setVideoIds(urlList);
                 youFragment.playAll(true);
-                launchYoutuebFrag(youFragment);
+                launchYoutubeFrag(youFragment);
             }
             case R.id.btnPlaySelected:{
                 int i = 0;
@@ -273,7 +264,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                     YoutubeFragment yFragment = new YoutubeFragment();
                     yFragment.setVideoIds(playList);
                     yFragment.playAll(true);
-                    launchYoutuebFrag(yFragment);
+                    launchYoutubeFrag(yFragment);
                 }
 
             }
@@ -303,10 +294,18 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         }
     }
 
-    public void launchYoutuebFrag(YoutubeFragment frag){
+    public void launchYoutubeFrag(YoutubeFragment frag){
+        int orientation = this.getResources().getConfiguration().orientation;
+        int activityId;
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+            activityId = R.id.flLandscape;
+        }
+        else{
+            activityId = R.id.activity_listscreen;
+        }
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction()
-                .replace(R.id.activity_listscreen, frag)
+                .replace(activityId, frag)
                 .addToBackStack(null)
                 .commit();
     }
