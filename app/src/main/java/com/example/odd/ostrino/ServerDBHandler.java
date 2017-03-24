@@ -3,7 +3,11 @@ package com.example.odd.ostrino;
 /**
  * Created by Odd on 24.03.2017.
  */
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 public class ServerDBHandler{

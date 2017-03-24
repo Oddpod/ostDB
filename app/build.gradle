@@ -27,4 +27,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.1.0'
     testCompile 'junit:junit:4.12'
     compile files('C:/Users/Odd/AndroidStudioProjects/OSTrino/Libs/YouTubeAndroidPlayerApi.jar')
+    compile files('C:/Users/Odd/AndroidStudioProjects/OSTrino/Libs/mysql-connector-java-5.0.8-bin.jar')
 }
