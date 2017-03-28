@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ServerDBHandler{
 
-        private String url = "jdbc:mysql://192.168.1.2:3306/ostrinophonedb";
+        private String url = "jdbc:mysql://10.22.44.163:3306/ostrinodb";
         private String user = "root";
         private String password = "";
 

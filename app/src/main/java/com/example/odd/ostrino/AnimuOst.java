@@ -228,7 +228,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 osw.write(line + "\n");
             }
             //fos.close();
-            //osw.close();
+            osw.close();
         }catch (java.io.IOException e){
             throw new java.io.IOException("File not found");
             //System.out.println("File not found");

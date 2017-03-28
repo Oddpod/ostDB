@@ -31,24 +31,14 @@ import java.util.List;
 
 public class YoutubeFragment extends Fragment implements OnInitializedListener{
     // API キー
-    private static final String API_KEY = "AIzaSyDSMKvbGUJxKhPz5t4PMFEByD5qFy1sjEA";
-
-    @SuppressLint("InlinedApi")
-    private static final int PORTRAIT_ORIENTATION = Build.VERSION.SDK_INT < 9
-            ? ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            : ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT;
-
-    @SuppressLint("InlinedApi")
-    private static final int LANDSCAPE_ORIENTATION = Build.VERSION.SDK_INT < 9
-            ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            : ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+    public static final String API_KEY = "AIzaSyDSMKvbGUJxKhPz5t4PMFEByD5qFy1sjEA";
 
     // YouTubeのビデオID
     private String videoId;
     private List<String> videoIds;
     private boolean playQueue = false;
-    private YouTubePlayer mPlayer = null;
-    private boolean mAutoRotation = false;
+    public YouTubePlayer mPlayer = null;
+    private YouTubePlayer.OnFullscreenListener fullScreenListener = null;
 
     public YoutubeFragment(){}
 
@@ -56,8 +46,6 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener{
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.youtube_api, container, false);
-        mAutoRotation = Settings.System.getInt(getActivity().getContentResolver(),
-                Settings.System.ACCELEROMETER_ROTATION, 0) == 1;
 
         // YouTubeフラグメントインスタンスを取得
         YouTubePlayerSupportFragment youTubePlayerFragment = YouTubePlayerSupportFragment.newInstance();
@@ -75,14 +63,16 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener{
     // YouTubeプレーヤーの初期化成功
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
-
+        this.mPlayer = player;
+        //player.setOnFullscreenListener(fullScreenListener);
             if(playQueue){
-                player.loadVideos(videoIds);
+                mPlayer.loadVideos(videoIds);
 
             }else{
-                player.loadVideo(videoId);
+                mPlayer.loadVideo(videoId);
             }
-            player.play();
+            mPlayer.play();
+            mPlayer.setShowFullscreenButton(false);
     }
 
     // YouTubeプレーヤーの初期化失敗
