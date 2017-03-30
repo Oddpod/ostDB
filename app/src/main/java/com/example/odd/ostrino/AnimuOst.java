@@ -3,18 +3,20 @@ package com.example.odd.ostrino;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.StrictMode;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,7 +28,7 @@ import java.util.Random;
 
 public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenListener, View.OnClickListener{
 
-    Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst, btnTestConnection;
+    Button btnAdd, btnViewList, btnAddOsts, btnExportOsts, btnRandomOst, btnTestConnection, btnTestFloater;
     SQLiteDatabase dtb;
     private String TAG = "OstInfo";
     DBHandler db;
@@ -52,6 +54,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         btnExportOsts = (Button) findViewById(R.id.btnExport);
         btnRandomOst = (Button) findViewById(R.id.btnRandomOst);
         btnTestConnection = (Button) findViewById(R.id.btnTestConnection);
+        btnTestFloater = (Button)findViewById(R.id.btnTestFloater);
 
         btnAdd.setOnClickListener(this);
         btnViewList.setOnClickListener(this);
@@ -59,6 +62,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
         btnExportOsts.setOnClickListener(this);
         btnRandomOst.setOnClickListener(this);
         btnTestConnection.setOnClickListener(this);
+        btnTestFloater.setOnClickListener(this);
         }
 
     //Set button behaviours
@@ -92,7 +96,7 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 break;
             }
             case R.id.btnTestConnection:{
-                Toast.makeText(getApplicationContext(), "Updating database", Toast.LENGTH_SHORT).show();
+                /*Toast.makeText(getApplicationContext(), "Updating database", Toast.LENGTH_SHORT).show();
                 ServerDBHandler serverDBHandler = new ServerDBHandler();
                 ostList = db.getAllOsts();
                 try{
@@ -100,8 +104,28 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                     ostList = serverDBHandler.getOsts(ostList);
                 } catch (java.sql.SQLException e){
                     e.printStackTrace();
-                }
+                }*/
                 break;
+            }
+            case R.id.btnTestFloater:{
+                if(Build.VERSION.SDK_INT >= 23) {
+                    if (!Settings.canDrawOverlays(this)) {
+                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName()));
+                        startActivityForResult(intent, 1234);
+                    }
+                    else{
+                        Intent intent = new Intent(this, FloatingWindow.class);
+                        startService(intent);
+
+                    }
+                }
+                else
+                {
+                    Intent intent = new Intent(this, FloatingWindow.class);
+                    startService(intent);
+                }
+
             }
         }
     }

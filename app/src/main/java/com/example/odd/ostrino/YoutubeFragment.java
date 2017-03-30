@@ -38,7 +38,6 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener{
     private List<String> videoIds;
     private boolean playQueue = false;
     public YouTubePlayer mPlayer = null;
-    private YouTubePlayer.OnFullscreenListener fullScreenListener = null;
 
     public YoutubeFragment(){}
 
@@ -64,15 +63,8 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener{
     @Override
     public void onInitializationSuccess(Provider provider, YouTubePlayer player, boolean wasRestored) {
         this.mPlayer = player;
+        initPlayer();
         //player.setOnFullscreenListener(fullScreenListener);
-            if(playQueue){
-                mPlayer.loadVideos(videoIds);
-
-            }else{
-                mPlayer.loadVideo(videoId);
-            }
-            mPlayer.play();
-            mPlayer.setShowFullscreenButton(false);
     }
 
     // YouTubeプレーヤーの初期化失敗
@@ -84,8 +76,21 @@ public class YoutubeFragment extends Fragment implements OnInitializedListener{
         Log.d("errorMessage:", errorMessage);
     }
 
+    public void initPlayer(){
+        if(playQueue){
+            mPlayer.loadVideos(videoIds);
+            playQueue = false;
+
+        }else{
+            mPlayer.loadVideo(videoId);
+        }
+        mPlayer.play();
+        mPlayer.setShowFullscreenButton(false);
+    }
+
     public void setVideoId(String url){
         videoId = urlToId(url);
+        System.out.println(videoId);
     }
 
     public void setVideoIds(List<String> urls){

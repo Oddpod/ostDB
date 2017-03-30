@@ -1,13 +1,10 @@
 package com.example.odd.ostrino;
 
 import android.app.DialogFragment;
-import android.app.FragmentTransaction;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,8 +15,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -27,8 +22,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.example.odd.ostrino.YoutubeFragment.API_KEY;
 
 /**
  * Created by Odd on 12.02.2017.
@@ -48,11 +41,11 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     private String filterText;
     private TextWatcher textWatcher;
     private TableRow tR;
-    private ScrollView scrollview;
-    private FrameLayout youtubeLandscape;
+    private FrameLayout flOntop;
     private YoutubeFragment youtubeFragment = null;
     Button btnDelHeader, btnPlayAll, btnplaySelected;
-    private TextView title_header, show_header, tags_header, label_title, label_show, label_tags;
+    private TextView title_header, show_header, tags_header;
+    boolean youtubeFragLaunched;
 
     public ListScreen() {
     }
@@ -95,16 +88,14 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         btnPlayAll.setOnClickListener(this);
         btnplaySelected.setOnClickListener(this);
 
-        youtubeLandscape = (FrameLayout) findViewById(R.id.flLandscape);
         tableLayout = (TableLayout) findViewById(R.id.tlOstTable);
+        flOntop = (FrameLayout) findViewById(R.id.flOntop);
         currDispOstList = new ArrayList<>(); //Contains all ost in the shown list even when filtered
         createList();
     }
 
     public void createList() {
         checkBoxes = new ArrayList<>();
-        //tableLayout.removeAllViews();
-        //tableLayout.setWeightSum(3);
 
         //Creating Title column header
         title_header = (TextView) findViewById(R.id.titleHeader);
@@ -127,7 +118,7 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
     }
 
     public void addRow(final Ost ost) {
-        final int id = ost.getId();
+        //final int id = ost.getId();
         String ostInfoString = ost.getTitle() + " " + ost.getShow() + " " + ost.getTags();
         ostInfoString = ostInfoString.toLowerCase();
         final String title = ost.getTitle();
@@ -138,7 +129,6 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         final String url = ost.getUrl();
 
         TextView label_title = new TextView(getApplicationContext());
-        label_title.setId(View.generateViewId());
         label_title.setText(title);
         label_title.setTextColor(Color.BLACK);
         label_title.setTextSize(rowTextSize);
@@ -146,7 +136,6 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         tR.addView(label_title);
 
         TextView label_show = new TextView(getApplicationContext());
-        label_show.setId(View.generateViewId());
         label_show.setText(show);
         label_show.setTextColor(Color.BLACK);
         label_show.setTextSize(rowTextSize);
@@ -154,7 +143,6 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
         tR.addView(label_show);
 
         TextView label_tags = new TextView(getApplicationContext());
-        label_tags.setId(View.generateViewId());
         label_tags.setText(tags);
         label_tags.setTextColor(Color.BLACK);
         label_tags.setTextSize(rowTextSize);
@@ -169,13 +157,12 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                 //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 initYoutubeFrag();
                 youtubeFragment.setVideoId(url);
-                launchYoutubeFrag(youtubeFragment);
+                updateYoutubeFrag();
             }
 
         });
 
         CheckBox checkBox = new CheckBox(getApplicationContext());
-        checkBox.setId(View.generateViewId());
         checkBox.setPadding(5, 5, 0, 5);
         checkBox.setTextSize(rowTextSize);
         checkBox.setChecked(false);
@@ -249,10 +236,10 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                     urlList.add(ost.getUrl());
                 }
                 //System.out.println("urlList: " + urlList);
-                YoutubeFragment youFragment = new YoutubeFragment();
-                youFragment.setVideoIds(urlList);
-                youFragment.playAll(true);
-                launchYoutubeFrag(youFragment);
+                initYoutubeFrag();
+                youtubeFragment.setVideoIds(urlList);
+                youtubeFragment.playAll(true);
+                updateYoutubeFrag();
             }
             case R.id.btnPlaySelected:{
                 int i = 0;
@@ -268,10 +255,10 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
                     i++;
                 }
                 if(playList.size()> 0){
-                    YoutubeFragment yFragment = new YoutubeFragment();
-                    yFragment.setVideoIds(playList);
-                    yFragment.playAll(true);
-                    launchYoutubeFrag(yFragment);
+                    initYoutubeFrag();
+                    youtubeFragment.setVideoIds(playList);
+                    youtubeFragment.playAll(true);
+                    updateYoutubeFrag();
                 }
 
             }
@@ -295,26 +282,29 @@ public class ListScreen extends AppCompatActivity implements AddScreen.AddScreen
             }
         }
     }
+
     public void initYoutubeFrag(){
         if(youtubeFragment == null){
             youtubeFragment = new YoutubeFragment();
         }
     }
 
-    public void launchYoutubeFrag(YoutubeFragment frag){
-        int orientation = this.getResources().getConfiguration().orientation;
-        int activityId;
-        if(orientation == Configuration.ORIENTATION_LANDSCAPE){
-            activityId = R.id.flLandscape;
-        }
-        else{
-            activityId = R.id.activity_listscreen;
-        }
+    public void launchYoutubeFrag(){
+        youtubeFragLaunched = true;
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction()
-                .replace(activityId, frag)
+                .add(R.id.flOntop, youtubeFragment)
                 .addToBackStack(null)
                 .commit();
+    }
+
+    public void updateYoutubeFrag(){
+        if(youtubeFragLaunched){
+            youtubeFragment.initPlayer();
+        }
+        else{
+            launchYoutubeFrag();
+        }
     }
 
     @Override
