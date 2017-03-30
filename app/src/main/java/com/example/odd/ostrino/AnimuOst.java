@@ -17,6 +17,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -159,7 +161,6 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //System.out.println(resultCode + requestCode + data.getData().toString());
         if (requestCode == 1 && resultCode == RESULT_OK) {
                 Uri currFileURI = data.getData();
                 readFromFile(currFileURI);
@@ -193,17 +194,16 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     }
 
     private void chooseFileDir(){
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
-                .setType("text/*")
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .putExtra(Intent.EXTRA_TITLE, "Choose file to write to");
-        try {
-            startActivityForResult(
-                    Intent.createChooser(intent, "Select a Directory"),
-                    2);
-        } catch (android.content.ActivityNotFoundException ex) {
-            // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(getApplicationContext(), "Please install a File Manager.", Toast.LENGTH_SHORT).show();
+        Intent intent;
+        if (Build.VERSION.SDK_INT < 19) {
+            intent = new Intent();
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            intent.setType("text/plain");
+            startActivityForResult(intent, 2);
+        } else {
+            intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.setType("text/plain");
+            startActivityForResult(intent, 2);
         }
     }
 
@@ -233,11 +233,6 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     public void writeToFile(Uri uri) throws IOException{
         ostList= db.getAllOsts();
         try {
-            /*String filePath = uri.getPath();
-            File file = new File(filePath);
-            file.createNewFile();
-            System.out.println(file.toString());
-            FileOutputStream fos = new FileOutputStream(file, true);*/
             OutputStream os = getContentResolver().openOutputStream(uri);
             OutputStreamWriter osw = new OutputStreamWriter(os);
             String line;
@@ -251,11 +246,9 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
                 System.out.println(line);
                 osw.write(line + "\n");
             }
-            //fos.close();
             osw.close();
         }catch (java.io.IOException e){
             throw new java.io.IOException("File not found");
-            //System.out.println("File not found");
         }
     }
 
