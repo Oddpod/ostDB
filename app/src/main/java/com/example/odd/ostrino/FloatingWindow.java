@@ -28,7 +28,6 @@ public class FloatingWindow extends Service {
     private Button btnStop;
     private ImageView iw;
     private String VIDEO_ID;
-    private YoutubeFragment youtubeFragment;
     private WindowManager.LayoutParams params;
 
     @Nullable

@@ -36,11 +36,15 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
     DBHandler db;
     Ost lastAddedOst;
     List<Ost> ostList;
+    Random rnd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animuost);
+
+        //Instantiates the random variable used for random ost
+        rnd = new Random();
 
         //Needed to access server
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -90,12 +94,16 @@ public class AnimuOst extends AppCompatActivity implements AddScreen.AddScreenLi
             }
             case R.id.btnRandomOst: {
                 ostList = db.getAllOsts();
-                Random rnd = new Random();
-                int rndId = rnd.nextInt(ostList.size());
-                Ost ost = db.getOst(rndId);
-                String url = ost.getUrl();
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                break;
+                if(ostList.size()> 0){
+                    int rndId = rnd.nextInt(ostList.size());
+                    Ost ost = db.getOst(rndId);
+                    String url = ost.getUrl();
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    break;
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), "Ost list is empty", Toast.LENGTH_SHORT).show();
+                }
             }
             case R.id.btnTestConnection:{
                 /*Toast.makeText(getApplicationContext(), "Updating database", Toast.LENGTH_SHORT).show();

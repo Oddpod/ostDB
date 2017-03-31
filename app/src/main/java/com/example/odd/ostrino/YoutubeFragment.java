@@ -6,8 +6,10 @@ package com.example.odd.ostrino;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.PixelFormat;
 import android.media.AudioTrack;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,9 +17,11 @@ import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
@@ -27,6 +31,8 @@ import com.google.android.youtube.player.YouTubePlayerSupportFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 
 public class YoutubeFragment extends Fragment implements OnInitializedListener{
